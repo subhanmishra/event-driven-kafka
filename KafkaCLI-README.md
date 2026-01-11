@@ -41,6 +41,21 @@ cd /opt/kafka/bin
 --topic my-first-topic
 ```
 
+**Kafka consumer**
+```bash
+./kafka-console-consumer.sh \
+  --bootstrap-server localhost:9092 \
+  --topic my-first-topic \
+  --from-beginning
+```
+
+**Kafka Producer**
+```bash
+./kafka-console-producer.sh \
+  --bootstrap-server localhost:9092 \
+  --topic my-first-topic
+```
+
 **Exit the container interactive shell:**
 ```bash
 exit
