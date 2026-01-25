@@ -20,3 +20,22 @@ The Kafka producer is configured in `src/main/resources/application.yml`.
 - **Batch Size**: `16384` (16KB)
 - **Linger ms**: `10` (Wait 10ms to batch messages)
 - **Delivery Timeout**: `120000` ms
+
+## Implementation Details
+
+The producer logic is implemented in `OrderService.java`.
+
+- **Topic**: `orders`
+- **Message Key**: `orderId` (Ensures ordering for updates to the same order)
+- **Payload**: `OrderPlacedEvent` (JSON serialized)
+- **Method**: Asynchronous sending using `KafkaTemplate` with `CompletableFuture` for success/failure callbacks.
+
+### Event Structure (`OrderPlacedEvent`)
+
+The event payload contains:
+- `orderId` (String)
+- `customerId` (String)
+- `productId` (String)
+- `quantity` (Integer)
+- `totalAmount` (BigDecimal)
+- `orderDate` (LocalDateTime)
