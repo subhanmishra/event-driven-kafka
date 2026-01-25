@@ -3,12 +3,10 @@ package com.subhanmishra;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 public class OrderService {
@@ -37,22 +35,17 @@ public class OrderService {
         log.info("Publishing OrderPlacedEvent: {}", event);
 
         // Send message asynchronously
-        CompletableFuture<SendResult<String, OrderPlacedEvent>> future =
-                kafkaTemplate.send(TOPIC_NAME, event.orderId(), event);
 
-        // Handle success
-        future.thenAccept(result -> {
-            var metadata = result.getRecordMetadata();
-            log.info("Message sent successfully! Topic: {}, Partition: {}, Offset: {}",
-                    metadata.topic(),
-                    metadata.partition(),
-                    metadata.offset());
-        });
-
-        // Handle failure
-        future.exceptionally(ex -> {
-            log.error("Failed to send message: {}", ex.getMessage(), ex);
-            return null;
-        });
+        kafkaTemplate.send(TOPIC_NAME, event.orderId(), event)
+                .thenAccept(result -> {// Handle success
+                    var metadata = result.getRecordMetadata();
+                    log.info("Message sent successfully! Topic: {}, Partition: {}, Offset: {}",
+                            metadata.topic(),
+                            metadata.partition(),
+                            metadata.offset());
+                }).exceptionally(ex -> {// Handle failure
+                    log.error("Failed to send message: {}", ex.getMessage(), ex);
+                    return null;
+                });
     }
 }
