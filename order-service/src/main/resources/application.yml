@@ -1,0 +1,23 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: order-service
+  virtual:
+    threads:
+      enabled: true
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all # Wait for all replicas (most reliable)
+      retries: 3 # Try 3 times if sending fails
+      batch-size: 16384 # Collect 16KB before sending
+      properties:
+        enable.idempotence: true
+        retry.backoff.ms: 1000
+        delivery.timeout.ms: 120000
+        linger.ms: 10 # Wait 10ms for more messages to batch
+        request.timeout.ms: 60000
+        max.in.flight.requests.per.connection: 5
